@@ -1,24 +1,22 @@
 import { useState } from "react";
-import { Heart, Star } from "lucide-react";
-import p1 from "@/assets/p1.jpg";
-import p2 from "@/assets/p2.jpg";
-import p3 from "@/assets/p3.jpg";
-import p4 from "@/assets/p4.jpg";
-import p5 from "@/assets/p5.jpg";
-import p6 from "@/assets/p6.jpg";
+import { Heart, Star, X } from "lucide-react";
+import { products, type Product } from "./products";
 
-const products = [
-  { id: 1, name: "Batom Velours Noir", desc: "Matte aveludado de longa fixação", price: "R$ 289", rating: 5, img: p1, tag: "Best-seller" },
-  { id: 2, name: "Sérum Éclat d'Or", desc: "Vitamina C estabilizada e ácido hialurônico", price: "R$ 486", rating: 5, img: p2, tag: "Novo" },
-  { id: 3, name: "Parfum Nuit Blanche", desc: "Âmbar, jasmim e baunilha bourbon", price: "R$ 749", rating: 4, img: p3 },
-  { id: 4, name: "Creme Riche Absolu", desc: "Nutrição intensa com peptídeos", price: "R$ 592", rating: 5, img: p4 },
-  { id: 5, name: "Óleo Capilar Soie", desc: "Brilho espelhado sem peso", price: "R$ 234", rating: 4, img: p5 },
-  { id: 6, name: "Paleta Terre Nue", desc: "Seis tons neutros ultra pigmentados", price: "R$ 398", rating: 5, img: p6, tag: "Edição limitada" },
-];
-
-export function FeaturedProducts({ onAdd }: { onAdd: () => void }) {
+export function FeaturedProducts({
+  onAdd,
+  activeCategory,
+  onClearCategory,
+}: {
+  onAdd: (p: Product) => void;
+  activeCategory: string | null;
+  onClearCategory: () => void;
+}) {
   const [favs, setFavs] = useState<number[]>([]);
   const [added, setAdded] = useState<number | null>(null);
+
+  const visible = activeCategory
+    ? products.filter((p) => p.category === activeCategory)
+    : products;
 
   const toggleFav = (id: number) =>
     setFavs((f) => (f.includes(id) ? f.filter((x) => x !== id) : [...f, id]));
@@ -28,12 +26,22 @@ export function FeaturedProducts({ onAdd }: { onAdd: () => void }) {
       <div className="mx-auto max-w-7xl px-5 md:px-10">
         <div className="mb-12 text-center md:mb-16">
           <p className="eyebrow">Seleção da maison</p>
-          <h2 className="mt-4 font-display text-4xl md:text-5xl">Produtos em destaque</h2>
+          <h2 className="mt-4 font-display text-4xl md:text-5xl">
+            {activeCategory ?? "Produtos em destaque"}
+          </h2>
           <div className="hairline mx-auto mt-6 max-w-[120px]" />
+          {activeCategory && (
+            <button
+              onClick={onClearCategory}
+              className="mt-6 inline-flex items-center gap-2 border border-foreground/20 px-4 py-2 text-[0.62rem] tracking-[0.2em] uppercase transition-colors hover:border-deep hover:bg-deep hover:text-deep-foreground"
+            >
+              <X size={12} strokeWidth={1.4} /> Ver todos os produtos
+            </button>
+          )}
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((p) => (
+          {visible.map((p) => (
             <article
               key={p.id}
               className="group flex flex-col bg-card transition-shadow duration-500 hover:shadow-[var(--shadow-soft)]"
@@ -81,7 +89,7 @@ export function FeaturedProducts({ onAdd }: { onAdd: () => void }) {
                 <p className="mt-5 text-lg font-light tracking-wide">{p.price}</p>
                 <button
                   onClick={() => {
-                    onAdd();
+                    onAdd(p);
                     setAdded(p.id);
                     setTimeout(() => setAdded((a) => (a === p.id ? null : a)), 1600);
                   }}
