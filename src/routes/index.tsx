@@ -1,24 +1,49 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { Header } from "@/components/store/Header";
+import { Hero } from "@/components/store/Hero";
+import { Categories } from "@/components/store/Categories";
+import { FeaturedProducts } from "@/components/store/FeaturedProducts";
+import { Collection } from "@/components/store/Collection";
+import { Benefits } from "@/components/store/Benefits";
+import { Testimonials } from "@/components/store/Testimonials";
+import { Newsletter } from "@/components/store/Newsletter";
+import { Footer } from "@/components/store/Footer";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+const title = "Maison Lumière — Beleza Feminina de Alto Padrão";
+const description =
+  "Loja de beleza de luxo: maquiagem, skincare, perfumaria, cabelos e kits presente com curadoria exclusiva e embalagem premium.";
+
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
 function Index() {
+  const [cart, setCart] = useState(0);
+
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <Header cartCount={cart} />
+      <main>
+        <Hero />
+        <Categories />
+        <FeaturedProducts onAdd={() => setCart((c) => c + 1)} />
+        <Collection />
+        <Benefits />
+        <Testimonials />
+        <Newsletter />
+      </main>
+      <Footer />
     </div>
   );
 }
