@@ -14,7 +14,7 @@ const categories = [
   { name: "Kits e Presentes", img: gifts, count: "31 produtos" },
 ];
 
-export function Categories() {
+export function Categories({ onSelect }: { onSelect: (name: string) => void }) {
   return (
     <section className="bg-background py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-5 md:px-10">
@@ -33,7 +33,12 @@ export function Categories() {
 
         <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6">
           {categories.map((c) => (
-            <a key={c.name} href="#" className="group relative block overflow-hidden">
+            <button
+              key={c.name}
+              type="button"
+              onClick={() => onSelect(c.name)}
+              className="group relative block w-full overflow-hidden text-left"
+            >
               <img
                 src={c.img}
                 alt={c.name}
@@ -43,7 +48,7 @@ export function Categories() {
                 className="aspect-[4/5] w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.04]"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-deep/60 via-deep/5 to-transparent opacity-80 transition-opacity duration-500 group-hover:opacity-95" />
-              <div className="absolute inset-x-0 bottom-0 p-5 md:p-6">
+              <div className="absolute inset-x-0 bottom-0 p-5 text-left md:p-6">
                 <h3 className="font-display text-2xl text-deep-foreground md:text-3xl">
                   {c.name}
                 </h3>
@@ -51,7 +56,7 @@ export function Categories() {
                   {c.count}
                 </p>
               </div>
-            </a>
+            </button>
           ))}
         </div>
       </div>

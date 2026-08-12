@@ -3,7 +3,13 @@ import { Search, User, ShoppingBag, Menu, X } from "lucide-react";
 
 const links = ["Início", "Maquiagem", "Skincare", "Cabelos", "Perfumes", "Ofertas"];
 
-export function Header({ cartCount }: { cartCount: number }) {
+export function Header({
+  cartCount,
+  onCartClick,
+}: {
+  cartCount: number;
+  onCartClick: () => void;
+}) {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -59,7 +65,11 @@ export function Header({ cartCount }: { cartCount: number }) {
           <button aria-label="Minha conta" className="transition-opacity hover:opacity-60">
             <User size={18} strokeWidth={1.4} />
           </button>
-          <button aria-label="Carrinho" className="relative transition-opacity hover:opacity-60">
+          <button
+            aria-label="Carrinho"
+            onClick={onCartClick}
+            className="relative transition-opacity hover:opacity-60"
+          >
             <ShoppingBag size={18} strokeWidth={1.4} />
             <span className="absolute -right-2 -top-2 grid h-4 w-4 place-items-center rounded-full bg-deep text-[0.55rem] text-deep-foreground">
               {cartCount}
