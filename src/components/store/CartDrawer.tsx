@@ -21,19 +21,17 @@ export function CartDrawer({
   open: boolean;
   onOpenChange: (v: boolean) => void;
   items: CartItem[];
-  onInc: (id: number) => void;
-  onDec: (id: number) => void;
-  onRemove: (id: number) => void;
+  onInc: (id: string) => void;
+  onDec: (id: string) => void;
+  onRemove: (id: string) => void;
 }) {
-  const total = items.reduce((s, i) => s + i.product.priceValue * i.qty, 0);
+  const total = items.reduce((s, i) => s + i.product.price * i.qty, 0);
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent className="flex w-full flex-col bg-background sm:max-w-md">
         <SheetHeader className="text-left">
-          <SheetTitle className="font-display text-3xl font-normal">
-            Sua sacola
-          </SheetTitle>
+          <SheetTitle className="font-display text-3xl font-normal">Sua sacola</SheetTitle>
           <SheetDescription className="text-xs tracking-[0.14em] uppercase text-muted-foreground">
             {items.length === 0
               ? "Nenhum item selecionado"
@@ -45,8 +43,7 @@ export function CartDrawer({
           <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
             <ShoppingBag size={28} strokeWidth={1} className="text-muted-foreground" />
             <p className="max-w-[16rem] text-sm font-light text-muted-foreground">
-              Sua sacola está vazia. Explore nossa curadoria e adicione seus
-              favoritos.
+              Sua sacola está vazia. Explore nossa curadoria e adicione seus favoritos.
             </p>
           </div>
         ) : (
@@ -54,16 +51,18 @@ export function CartDrawer({
             <ul className="divide-y divide-border">
               {items.map(({ product, qty }) => (
                 <li key={product.id} className="flex gap-4 py-5">
-                  <img
-                    src={product.img}
-                    alt={product.name}
-                    loading="lazy"
-                    className="h-24 w-20 shrink-0 object-cover"
-                  />
+                  {product.imageUrl ? (
+                    <img
+                      src={product.imageUrl}
+                      alt={product.name}
+                      loading="lazy"
+                      className="h-24 w-20 shrink-0 object-cover"
+                    />
+                  ) : (
+                    <div className="h-24 w-20 shrink-0 bg-secondary" />
+                  )}
                   <div className="flex min-w-0 flex-1 flex-col">
-                    <h3 className="font-display text-lg leading-tight">
-                      {product.name}
-                    </h3>
+                    <h3 className="font-display text-lg leading-tight">{product.name}</h3>
                     <p className="mt-0.5 text-[0.6rem] tracking-[0.2em] uppercase text-muted-foreground">
                       {product.category}
                     </p>
@@ -86,7 +85,7 @@ export function CartDrawer({
                         </button>
                       </div>
                       <span className="text-sm font-light">
-                        {formatBRL(product.priceValue * qty)}
+                        {formatBRL(product.price * qty)}
                       </span>
                     </div>
                   </div>
