@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+import { queryOptions, useSuspenseQuery } from "@tanstack/react-query";
 import { Header } from "@/components/store/Header";
 import { Hero } from "@/components/store/Hero";
 import { Categories } from "@/components/store/Categories";
@@ -11,10 +12,16 @@ import { Newsletter } from "@/components/store/Newsletter";
 import { Footer } from "@/components/store/Footer";
 import { CartDrawer, type CartItem } from "@/components/store/CartDrawer";
 import type { Product } from "@/components/store/products";
+import { listStoreProducts } from "@/lib/store.functions";
 
 const title = "Maison Lumière — Beleza Feminina de Alto Padrão";
 const description =
   "Loja de beleza de luxo: maquiagem, skincare, perfumaria, cabelos e kits presente com curadoria exclusiva e embalagem premium.";
+
+const productsQuery = queryOptions({
+  queryKey: ["store-products"],
+  queryFn: () => listStoreProducts(),
+});
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,10 +34,12 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
+  loader: ({ context }) => context.queryClient.ensureQueryData(productsQuery),
   component: Index,
 });
 
 function Index() {
+  const { data: products, isFetching } = useSuspenseQuery(productsQuery);
   const [items, setItems] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [category, setCategory] = useState<string | null>(null);
@@ -47,12 +56,10 @@ function Index() {
         : [...prev, { product, qty: 1 }];
     });
 
-  const changeQty = (id: number, delta: number) =>
+  const changeQty = (id: string, delta: number) =>
     setItems((prev) =>
       prev
-        .map((i) =>
-          i.product.id === id ? { ...i, qty: i.qty + delta } : i,
-        )
+        .map((i) => (i.product.id === id ? { ...i, qty: i.qty + delta } : i))
         .filter((i) => i.qty > 0),
     );
 
@@ -68,8 +75,10 @@ function Index() {
       <Header cartCount={count} onCartClick={() => setCartOpen(true)} />
       <main>
         <Hero />
-        <Categories onSelect={selectCategory} />
+        <Categories products={products} onSelect={selectCategory} />
         <FeaturedProducts
+          products={products}
+          loading={isFetching && products.length === 0}
           onAdd={addItem}
           activeCategory={category}
           onClearCategory={() => setCategory(null)}
